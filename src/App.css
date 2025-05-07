@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@import url(https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans:200,300,regular,500,600,700,800,200italic,300italic,italic,500italic,600italic,700italic,800italic);
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+@theme {
+  --color-primary: #FFC700;
+  --color-paid: #a3fff1;
+  --color-paying: #98d1ff;
+  --color-unpaid: #ffde98;
+}
+
+@layer base{
+  p {
+    @apply text-sm
+  }
+  .bg-primary{
+    @apply bg-yellow-400 text-white text-sm rounded-md py-2 px-3 border
+  }
+  .wd {
+    @apply bg-teal-400
+  }
+  .rb {
+    @apply bg-amber-300
+  }
+}
