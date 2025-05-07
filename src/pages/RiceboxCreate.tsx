@@ -4,10 +4,7 @@ import { useState, useCallback } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa6';
 import Navbar from '../components/Navbar';
 import { MdChevronRight } from 'react-icons/md';
-import { CiCirclePlus } from 'react-icons/ci';
-import { HiEquals } from 'react-icons/hi2';
-import { Link, useNavigate } from 'react-router-dom';
-import { generateCateringPDF } from '../lib/pdfGenerator';
+import { Link } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 
 type Portion = {
@@ -104,8 +101,8 @@ export default function CreateOrderRicebox() {
     }
 
     // Check if menu portions meet minimum requirement
-    const menuSection = order.sections.find(s => s.section_name === 'Menu');
-    const menuPortion = menuSection?.section_portion || 0;
+    // const menuSection = order.sections.find(s => s.section_name === 'Menu');
+    // const menuPortion = menuSection?.section_portion || 0;
 
     return { isValid: true, message: '' };
   };
@@ -121,33 +118,33 @@ export default function CreateOrderRicebox() {
     };
   }, []);
 
-  const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
-    setOrder(prev => {
-      const updatedOrder = {
-        ...prev,
-        sections: prev.sections.map(section => 
-          section.id === sectionId 
-            ? { 
-                ...section, 
-                portions: updatedPortions,
-                section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
-                section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
-              } 
-            : section
-        ),
-        price: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
-            : section.section_total_price), 0),
-        portion: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
-            : section.section_portion), 0)
-      };
-      setValidation(validateOrder(updatedOrder));
-      return updatedOrder;
-    });
-  }, []);
+  // const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
+  //   setOrder(prev => {
+  //     const updatedOrder = {
+  //       ...prev,
+  //       sections: prev.sections.map(section => 
+  //         section.id === sectionId 
+  //           ? { 
+  //               ...section, 
+  //               portions: updatedPortions,
+  //               section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
+  //               section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
+  //             } 
+  //           : section
+  //       ),
+  //       price: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
+  //           : section.section_total_price), 0),
+  //       portion: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
+  //           : section.section_portion), 0)
+  //     };
+  //     setValidation(validateOrder(updatedOrder));
+  //     return updatedOrder;
+  //   });
+  // }, []);
 
   const handlePortionChange = useCallback((
     sectionId: string,
@@ -267,13 +264,13 @@ export default function CreateOrderRicebox() {
     });
   }, []);
 
-  const handleGeneratePDF = async (order: any) => {
-    try {
-      await generateCateringPDF(order);
-    } catch (error: any) {
-      alert('Failed to generate PDF: ' + error.message);
-    }
-  };
+  // const handleGeneratePDF = async (order: any) => {
+  //   try {
+  //     await generateCateringPDF(order);
+  //   } catch (error: any) {
+  //     alert('Failed to generate PDF: ' + error.message);
+  //   }
+  // };
 
   const [openPDF, setOpenPDF] = useState(false);
 
@@ -311,7 +308,6 @@ export default function CreateOrderRicebox() {
 
       if (!response.ok) throw new Error('Failed to create order');
       setOpenPDF(true);
-      const result = await response.json();
     } catch (error) {
       console.error('Error creating order:', error);
     }

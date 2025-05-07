@@ -6,8 +6,7 @@ import Navbar from '../components/Navbar';
 import { MdChevronRight } from 'react-icons/md';
 import { CiCirclePlus } from 'react-icons/ci';
 import { HiEquals } from 'react-icons/hi2';
-import { Link, useNavigate } from 'react-router-dom';
-import { generateCateringPDF } from '../lib/pdfGenerator';
+import { Link } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 
 type Portion = {
@@ -56,7 +55,6 @@ type OrderData = {
 };
 
 export default function CreateOrderWedding() {
-  const navigate = useNavigate();
   const [order, setOrder] = useState<OrderData>({
     event_name: '',
     invitation: 0,
@@ -170,33 +168,33 @@ export default function CreateOrderWedding() {
     };
   }, []);
 
-  const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
-    setOrder(prev => {
-      const updatedOrder = {
-        ...prev,
-        sections: prev.sections.map(section => 
-          section.id === sectionId 
-            ? { 
-                ...section, 
-                portions: updatedPortions,
-                section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
-                section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
-              } 
-            : section
-        ),
-        price: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
-            : section.section_total_price), 0),
-        portion: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
-            : section.section_portion), 0)
-      };
-      setValidation(validateOrder(updatedOrder));
-      return updatedOrder;
-    });
-  }, []);
+  // const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
+  //   setOrder(prev => {
+  //     const updatedOrder = {
+  //       ...prev,
+  //       sections: prev.sections.map(section => 
+  //         section.id === sectionId 
+  //           ? { 
+  //               ...section, 
+  //               portions: updatedPortions,
+  //               section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
+  //               section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
+  //             } 
+  //           : section
+  //       ),
+  //       price: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
+  //           : section.section_total_price), 0),
+  //       portion: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
+  //           : section.section_portion), 0)
+  //     };
+  //     setValidation(validateOrder(updatedOrder));
+  //     return updatedOrder;
+  //   });
+  // }, []);
 
   const handlePortionChange = useCallback((
     sectionId: string,
@@ -317,13 +315,13 @@ export default function CreateOrderWedding() {
   }, []);
 
   
-  const handleGeneratePDF = async (order: any) => {
-    try {
-      await generateCateringPDF(order);
-    } catch (error: any) {
-      alert('Failed to generate PDF: ' + error.message);
-    }
-  };
+  // const handleGeneratePDF = async (order: any) => {
+  //   try {
+  //     await generateCateringPDF(order);
+  //   } catch (error: any) {
+  //     alert('Failed to generate PDF: ' + error.message);
+  //   }
+  // };
 
   const [openPDF, setOpenPDF] = useState(false);
 
@@ -362,7 +360,6 @@ export default function CreateOrderWedding() {
 
       if (!response.ok) throw new Error('Failed to create order');
       setOpenPDF(true);
-      const result = await response.json();
       // navigate('/dashboard');
     } catch (error) {
       console.error('Error creating order:', error);
