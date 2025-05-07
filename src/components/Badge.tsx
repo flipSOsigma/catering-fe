@@ -1,4 +1,3 @@
-import React from 'react'
 
 const Badge = (props: {text: string}) => {
   const text = props.text

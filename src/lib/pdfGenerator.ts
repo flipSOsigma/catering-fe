@@ -1,4 +1,4 @@
-import { OrderData, Portion, Section } from './d/type';
+import { OrderData, Portion } from './d/type';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
