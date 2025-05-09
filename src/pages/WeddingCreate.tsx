@@ -31,6 +31,7 @@ type Section = {
 type OrderData = {
   unique_id?: string;
   event_name: string;
+  created_at?: Date;
   invitation: number;
   visitor: number;
   note: string;
@@ -59,6 +60,7 @@ export default function CreateOrderWedding() {
     event_name: '',
     invitation: 0,
     visitor: 0,
+    created_at: new Date(),
     note: '',
     price: 0,
     portion: 0,
@@ -142,7 +144,7 @@ export default function CreateOrderWedding() {
     if (buffetPortion + menuPortion < order.visitor * 3) {
       return {
         isValid: false,
-        message: `Total Buffet + Menu portions (${buffetPortion + menuPortion}) must be at least ${order.visitor * 3} (visitors × 3)`
+        message: `Total Buffet + Menu portions (${buffetPortion + menuPortion}) setidaknya minimal ${order.visitor * 3} (tamu × 3)`
       };
     }
 
@@ -150,7 +152,7 @@ export default function CreateOrderWedding() {
     if (buffetPortion + dessertPortion < order.visitor) {
       return {
         isValid: false,
-        message: `Total Buffet + Dessert portions (${buffetPortion + dessertPortion}) must be at least ${order.visitor} (number of visitors)`
+        message: `Total Buffet + Dessert portions (${buffetPortion + dessertPortion}) setidaknya minimal ${order.visitor} (dari jumlah tamu)`
       };
     }
 
@@ -509,7 +511,7 @@ export default function CreateOrderWedding() {
               value={order.event_name}
               onChange={(e) => setOrder({...order, event_name: e.target.value})}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Event name'
+              placeholder='Nama Event'
               required
             />
 
@@ -524,7 +526,7 @@ export default function CreateOrderWedding() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Customer name'
+              placeholder='Nama Customer'
               required
             />
 
@@ -539,7 +541,7 @@ export default function CreateOrderWedding() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Phone number'
+              placeholder='Nomor Telefon'
               required
             />
 
@@ -584,7 +586,7 @@ export default function CreateOrderWedding() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Building'
+              placeholder='Gedung'
               required
             />
 
@@ -599,7 +601,7 @@ export default function CreateOrderWedding() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Location'
+              placeholder='Lokasi'
               required
             />
 

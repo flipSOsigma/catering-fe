@@ -22,6 +22,7 @@ export interface OrderData {
   unique_id: string;
   event_name: string;
   invitation: number;
+  created_at: Date;
   visitor: number;
   note: string;
   price: number;

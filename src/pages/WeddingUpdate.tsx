@@ -31,6 +31,7 @@ type Section = {
 type OrderData = {
   unique_id?: string;
   event_name: string;
+  created_at?: Date;
   invitation: number;
   visitor: number;
   note: string;
@@ -607,7 +608,7 @@ export default function CreateOrderWedding() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Building'
+              placeholder='Gedung'
               required
             />
 
@@ -764,6 +765,12 @@ export default function CreateOrderWedding() {
           </div>
           
           <div className='flex justify-end gap-2 mt-6'>
+            <button
+              onClick={() => setOpenPDF(true)}
+              className='text-xs bg-primary disabled:bg-slate-400 text-white px-4 py-2 rounded hover:bg-yellow-600 duration-300'
+            >
+              Download PDF
+            </button>
             <button
               type='submit'
               disabled={!approve || !validation.isValid}

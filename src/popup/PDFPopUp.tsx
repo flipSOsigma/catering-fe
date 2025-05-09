@@ -1,6 +1,6 @@
 import { IoMdClose } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
-import { generateCateringPDF } from "../lib/pdfGenerator"
+import { generateCateringPDF, generateSuratJalanPDF } from "../lib/pdfGenerator"
 
 
 const PDFPopUp = ({order, close}: {order: any, close: () => void}) => {
@@ -20,11 +20,19 @@ const PDFPopUp = ({order, close}: {order: any, close: () => void}) => {
         <p className='w-full text-center'>silahkan pilih salah satu dari pilihan di bawah</p>
         <div className="flex items-center w-full mt-4">
           <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary text-center flex-1 whitespace-nowrap">laporan marketing</button>
-          <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary flex-1">surat jalan</button>
+          <button onClick={() => {generateSuratJalanPDF(order); navigate('/dashboard')}} className="bg-primary flex-1">surat jalan</button>
           <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary flex-1">pdf dapur</button>
         </div>
         <div className="flex items-center w-full mt-4">
-          <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary text-center flex-1 ">download semua pdf</button>
+          <button 
+            onClick={() => {
+              generateCateringPDF(order)
+              generateSuratJalanPDF(order)
+              navigate('/dashboard')
+            }} 
+            className="bg-primary text-center flex-1 ">
+            download semua pdf
+          </button>
         </div>
       </div>
     </div>

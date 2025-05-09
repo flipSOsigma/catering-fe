@@ -1,13 +1,14 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import ProtectedRoutes from './utils/protectedRoutes'
-import Dashboard from './pages/Dashboard'
-import CreateOrderWedding from './pages/WeddingCreate'
-import CreateOrderRicebox from './pages/RiceboxCreate'
 import Login from './auth/Login'
 import Ricebox from './pages/Ricebox'
 import Wedding from './pages/Wedding'
+import Dashboard from './pages/Dashboard'
+import ProtectedRoutes from './utils/protectedRoutes'
+import CreateOrderWedding from './pages/WeddingCreate'
+import CreateOrderRicebox from './pages/RiceboxCreate'
 import UpdateOrderWedding from './pages/WeddingUpdate'
+import UpdateOrderRicebox from './pages/RiceboxUpdate'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 function App() {
 
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/wedding/create/" element={<CreateOrderWedding />} />
           <Route path="/wedding/update/:uid" element={<UpdateOrderWedding />} />
           <Route path="/ricebox/create/" element={<CreateOrderRicebox />} />
+          <Route path="/ricebox/update/:uid" element={<UpdateOrderRicebox />} />
         </Route>
       </Routes>
     </Router>

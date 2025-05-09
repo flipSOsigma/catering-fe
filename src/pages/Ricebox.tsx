@@ -15,7 +15,7 @@ const Ricebox = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`${routeApi}/order/category/ricebox`, {
+        const response = await fetch(`${routeApi}/order/category/Ricebox`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

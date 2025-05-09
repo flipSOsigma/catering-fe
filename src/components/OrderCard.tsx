@@ -31,10 +31,10 @@ const OrderCard = (data: any) => {
         <div className='flex justify-start'>
           <div className={((orderData.event.event_category).toLocaleLowerCase() == 'wedding' ? 'bg-paid ' : 'bg-unpaid ') +  "text-xs px-4 py-1 mb-2 rounded-full lowercase"}>{orderData.event.event_category}</div>
         </div>
-        {(orderData.event.event_category).toLocaleLowerCase() == 'pernweddingikahan' ? (
-          <Link to={'/wedding/update/' + orderData.uid} className='font-semibold'>{orderData.event_name}</Link>
+        {(orderData.event.event_category).toLocaleLowerCase() == 'wedding' ? (
+          <Link to={'/wedding/update/' + orderData.unique_id} className='font-semibold'>{orderData.event_name}</Link>
         ) : (
-          <Link to={'/ricebox/update/' + orderData.uid} className='font-semibold'>{orderData.event_name}</Link>
+          <Link to={'/ricebox/update/' + orderData.unique_id} className='font-semibold'>{orderData.event_name}</Link>
         )}
         <p className="mb-8">{orderData.customer.customer_name}</p>
         <div className="grid grid-cols-2 gap-1"> 

@@ -30,6 +30,7 @@ type OrderData = {
   unique_id?: string;
   event_name: string;
   invitation: number;
+  created_at?: Date;
   visitor: number;
   note: string;
   price: number;
@@ -57,6 +58,7 @@ export default function CreateOrderRicebox() {
     event_name: '',
     invitation: 1,
     visitor: 1,
+    created_at: new Date(),
     note: '',
     price: 0,
     portion: 0,
@@ -76,7 +78,7 @@ export default function CreateOrderRicebox() {
     sections: [
       {
         id: 'menu-section',
-        section_name: 'Menu',
+        section_name: 'Menu Pondokan',
         section_note: '',
         section_price: 0,
         section_portion: 0,
@@ -437,8 +439,8 @@ export default function CreateOrderRicebox() {
           <MdChevronRight />
           <span>Create New Order</span>
         </div>
-        <h1 className='font-bold mt-4 text-xl'>Create New Wedding Order</h1>
-        <p>Please fill out the form below to create a new wedding order</p>
+        <h1 className='font-bold mt-4 text-xl'>Create New Ricebox Order</h1>
+        <p>Please fill out the form below to create a new Ricebox order</p>
         
         <div className='mt-8'>
           <p>Customer Data</p>
@@ -523,7 +525,7 @@ export default function CreateOrderRicebox() {
                 }
               })}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
-              placeholder='Building'
+              placeholder='Rumah'
               required
             />
 
