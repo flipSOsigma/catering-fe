@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { FaPlus, FaMinus } from 'react-icons/fa6';
 import Navbar from '../components/Navbar';
 import { MdChevronRight } from 'react-icons/md';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { generateCateringPDF } from '../lib/pdfGenerator';
-import { HiEquals } from 'react-icons/hi2';
 import { CiCirclePlus } from 'react-icons/ci';
+import { HiEquals } from 'react-icons/hi2';
+import { Link, useParams } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 
 type Portion = {
@@ -30,7 +29,7 @@ type Section = {
 };
 
 type OrderData = {
-  unique_id: string;
+  unique_id?: string;
   event_name: string;
   invitation: number;
   visitor: number;
@@ -38,13 +37,13 @@ type OrderData = {
   price: number;
   portion: number;
   customer: {
-    id: string;
+    id?: string;
     customer_name: string;
     customer_phone: string;
     customer_email: string;
   };
   event: {
-    id: string;
+    id?: string;
     event_name: string;
     event_location: string;
     event_date: string;
@@ -55,34 +54,93 @@ type OrderData = {
   sections: Section[];
 };
 
-export default function UpdateOrderWedding() {
-  const id = useParams().uid;
-  const [order, setOrder] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [approve, setApprove] = useState(false);
-  const [validation, setValidation] = useState({ isValid: false, message: '' });
-
+export default function CreateOrderWedding() {
+  const uid = useParams().uid
   useEffect(() => {
-    const fetchOrder = async () => {
-      const apiRoute = import.meta.env.VITE_API_ROUTE;
+    console.log(uid)
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${apiRoute}/order/${id}`);
-        const data = await response.json();
-        setOrder(data);
-        setLoading(false);
-        setValidation(validateOrder(data));
-      } catch (error) {
-        console.error('Error fetching order:', error);
-        setLoading(false);
+        const res = await fetch(`${import.meta.env.VITE_API_ROUTE}/order/${uid}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await res.json();
+        setOrder(data[0]);
+      } catch (err) {
+        console.error('Fetch error:', err);
       }
     };
 
-    fetchOrder();
-  }, [id]);
+    if (uid) {
+      fetchData();
+    }
+  }, []);
+  const [order, setOrder] = useState<OrderData>({
+    event_name: '',
+    invitation: 0,
+    visitor: 0,
+    note: '',
+    price: 0,
+    portion: 0,
+    customer: {
+      customer_name: '',
+      customer_phone: '',
+      customer_email: ''
+    },
+    event: {
+      event_name: 'Wedding',
+      event_location: '',
+      event_date: new Date().toISOString().split('T')[0],
+      event_building: '',
+      event_category: 'Wedding',
+      event_time: '08:00'
+    },
+    sections: [
+      {
+        id: 'buffet-section',
+        section_name: 'Buffet',
+        section_note: '',
+        section_price: 0,
+        section_portion: 0,
+        section_total_price: 0,
+        portions: [{ id: 'buffet-portion-0', portion_name: '', portion_note: '', portion_count: 0, portion_price: 0, portion_total_price: 0 }]
+      },
+      {
+        id: 'menu-section',
+        section_name: 'Menu Pondokan',
+        section_note: '',
+        section_price: 0,
+        section_portion: 0,
+        section_total_price: 0,
+        portions: [{ id: 'menu-portion-0', portion_name: '', portion_note: '', portion_count: 0, portion_price: 0, portion_total_price: 0 }]
+      },
+      {
+        id: 'dessert-section',
+        section_name: 'Dessert',
+        section_note: '',
+        section_price: 0,
+        section_portion: 0,
+        section_total_price: 0,
+        portions: [{ id: 'dessert-portion-0', portion_name: '', portion_note: '', portion_count: 0, portion_price: 0, portion_total_price: 0 }]
+      },
+      {
+        id: 'akad-section',
+        section_name: 'Akad',
+        section_note: '',
+        section_price: 0,
+        section_portion: 0,
+        section_total_price: 0,
+        portions: [{ id: 'akad-portion-0', portion_name: '', portion_note: '', portion_count: 0, portion_price: 0, portion_total_price: 0 }]
+      }
+    ]
+  });
 
-  const validateOrder = (order: OrderData | null): { isValid: boolean; message: string } => {
-    if (!order) return { isValid: false, message: 'Order data not loaded' };
+  const [approve, setApprove] = useState(false);
+  const [validation, setValidation] = useState({ isValid: true, message: '' });
 
+  const validateOrder = (order: OrderData): { isValid: boolean; message: string } => {
     // Condition 3: Check all required fields are filled
     if (
       !order.event_name ||
@@ -121,38 +179,44 @@ export default function UpdateOrderWedding() {
     return { isValid: true, message: '' };
   };
 
-  const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
-    if (!order) return;
+  const createEmptyPortion = useCallback((sectionId: string, index: number): Portion => {
+    return {
+      id: `${sectionId}-portion-${index}`,
+      portion_name: '',
+      portion_note: '',
+      portion_count: 0,
+      portion_price: 0,
+      portion_total_price: 0
+    };
+  }, []);
 
-    setOrder(prev => {
-      if (!prev) return prev;
-      
-      const updatedOrder = {
-        ...prev,
-        sections: prev.sections.map(section => 
-          section.id === sectionId 
-            ? { 
-                ...section, 
-                portions: updatedPortions,
-                section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
-                section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
-              } 
-            : section
-        ),
-        price: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
-            : section.section_total_price), 0),
-        portion: prev.sections.reduce((sum, section) => 
-          sum + (section.id === sectionId 
-            ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
-            : section.section_portion), 0)
-      };
-      
-      setValidation(validateOrder(updatedOrder));
-      return updatedOrder;
-    });
-  }, [order]);
+  // const handleSectionUpdate = useCallback((sectionId: string, updatedPortions: Portion[]) => {
+  //   setOrder(prev => {
+  //     const updatedOrder = {
+  //       ...prev,
+  //       sections: prev.sections.map(section => 
+  //         section.id === sectionId 
+  //           ? { 
+  //               ...section, 
+  //               portions: updatedPortions,
+  //               section_portion: updatedPortions.reduce((sum, portion) => sum + portion.portion_count, 0),
+  //               section_total_price: updatedPortions.reduce((sum, portion) => sum + portion.portion_total_price, 0)
+  //             } 
+  //           : section
+  //       ),
+  //       price: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_total_price, 0)
+  //           : section.section_total_price), 0),
+  //       portion: prev.sections.reduce((sum, section) => 
+  //         sum + (section.id === sectionId 
+  //           ? updatedPortions.reduce((s, p) => s + p.portion_count, 0)
+  //           : section.section_portion), 0)
+  //     };
+  //     setValidation(validateOrder(updatedOrder));
+  //     return updatedOrder;
+  //   });
+  // }, []);
 
   const handlePortionChange = useCallback((
     sectionId: string,
@@ -160,11 +224,8 @@ export default function UpdateOrderWedding() {
     field: keyof Portion | 'section_note',
     value: string | number
   ) => {
-    if (!order) return;
-  
     if (field === 'section_note') {
       setOrder(prev => {
-        if (!prev) return prev;
         const updated = {
           ...prev,
           sections: prev.sections.map(section => 
@@ -178,10 +239,8 @@ export default function UpdateOrderWedding() {
       });
       return;
     }
-  
+
     setOrder(prev => {
-      if (!prev) return prev;
-      
       const updatedSections = prev.sections.map(section => {
         if (section.id === sectionId) {
           const updatedPortions = section.portions.map(portion => {
@@ -219,57 +278,36 @@ export default function UpdateOrderWedding() {
       setValidation(validateOrder(updatedOrder));
       return updatedOrder;
     });
-  }, [order]);
+  }, []);
 
   const addPortion = useCallback((sectionId: string) => {
-    if (!order) return;
-
-    const newPortion: Portion = {
-      id: `new-${Date.now()}`,
-      portion_name: '',
-      portion_note: '',
-      portion_count: 0,
-      portion_price: 0,
-      portion_total_price: 0
-    };
-
     setOrder(prev => {
-      if (!prev) return prev;
-      
       const section = prev.sections.find(s => s.id === sectionId);
       if (!section) return prev;
 
-      const updatedPortions = [...section.portions, newPortion];
+      const newIndex = section.portions.length;
+      const newPortion = createEmptyPortion(sectionId, newIndex);
       
       const updatedSections = prev.sections.map(s => 
         s.id === sectionId 
           ? { 
               ...s, 
-              portions: updatedPortions,
-              section_portion: updatedPortions.reduce((sum, p) => sum + p.portion_count, 0),
-              section_total_price: updatedPortions.reduce((sum, p) => sum + p.portion_total_price, 0)
+              portions: [...s.portions, newPortion] 
             } 
           : s
       );
 
       const updatedOrder = {
         ...prev,
-        sections: updatedSections,
-        price: updatedSections.reduce((sum, section) => sum + section.section_total_price, 0),
-        portion: updatedSections.reduce((sum, section) => sum + section.section_portion, 0)
+        sections: updatedSections
       };
-      
       setValidation(validateOrder(updatedOrder));
       return updatedOrder;
     });
-  }, [order]);
+  }, [createEmptyPortion]);
 
   const removePortion = useCallback((sectionId: string, portionId: string) => {
-    if (!order) return;
-
     setOrder(prev => {
-      if (!prev) return prev;
-      
       const section = prev.sections.find(s => s.id === sectionId);
       if (!section || section.portions.length <= 1) return prev;
 
@@ -296,13 +334,66 @@ export default function UpdateOrderWedding() {
       setValidation(validateOrder(updatedOrder));
       return updatedOrder;
     });
-  }, [order]);
+  }, []);
+
+  
+  // const handleGeneratePDF = async (order: any) => {
+  //   try {
+  //     await generateCateringPDF(order);
+  //   } catch (error: any) {
+  //     alert('Failed to generate PDF: ' + error.message);
+  //   }
+  // };
+
+  const [openPDF, setOpenPDF] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const validationResult = validateOrder(order);
+    setValidation(validationResult);
+    
+    if (!validationResult.isValid || !approve) {
+      return;
+    }
+
+    const payload = {
+      ...order,
+      sections: order.sections.map(s => ({
+        ...s,
+        portions: s.section_portion === 0 ? [] : s.portions.map(p => ({
+          ...p,
+          portion_count: Number(p.portion_count),
+          portion_price: Number(p.portion_price),
+          portion_total_price: Number(p.portion_total_price)
+        }))
+      }))
+    };
+
+    const apiRoute = import.meta.env.VITE_API_ROUTE;
+    try {
+      const response = await fetch(`${apiRoute}/order/${uid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      // handleGeneratePDF(order)
+
+      if (!response.ok) throw new Error('Failed to create order');
+      setOpenPDF(true);
+      // navigate('/dashboard');
+    } catch (error) {
+      console.error('Error creating order:', error);
+    }
+  };
 
   const formatCurrency = (value: number): string => {
     return value.toLocaleString('id-ID');
   };
 
-  const parseCurrency = (formattedValue: string): number => {    
+  const parseCurrency = (formattedValue: string): number => {
     const numericString = formattedValue.replace(/\D/g, '');
     return numericString ? parseInt(numericString, 10) : 0;
   };
@@ -334,13 +425,6 @@ export default function UpdateOrderWedding() {
               value={portion.portion_name}
               onChange={(e) => onPortionChange(section.id, portion.id, 'portion_name', e.target.value)}
             />
-            {/* <input
-              type='number'
-              placeholder='Harga /porsi'
-              className='border px-4 py-3 text-sm border-slate-300 rounded'
-              value={portion.portion_price}
-              onChange={(e) => onPortionChange(section.id, portion.id, 'portion_price', Number(e.target.value))}
-            /> */}
             <input
               type='text'
               placeholder='Harga /porsi'
@@ -356,6 +440,13 @@ export default function UpdateOrderWedding() {
                 onPortionChange(section.id, portion.id, 'portion_price', numericValue);
               }}
             />
+            {/* <input
+              type='number'
+              placeholder='Harga /porsi'
+              className='border px-4 py-3 text-sm border-slate-300 rounded'
+              value={portion.portion_price}
+              onChange={(e) => onPortionChange(section.id, portion.id, 'portion_price', Number(e.target.value))}
+            /> */}
             <input
               type='number'
               placeholder='Jumlah porsi'
@@ -419,68 +510,16 @@ export default function UpdateOrderWedding() {
     );
   }, []);
 
-  const navigate = useNavigate()
-
-  const handleGeneratePDF = async (order: OrderData) => {
-    try {
-      await generateCateringPDF(order);
-    } catch (error: any) {
-      alert('Failed to generate PDF: ' + error.message);
-    }
-  };
-
-  const [openPDF, setOpenPDF] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!order) return;
-
-    const validationResult = validateOrder(order);
-    setValidation(validationResult);
-    
-    if (!validationResult.isValid || !approve) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3030/order/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(order)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update order');
-      }
-
-      setOpenPDF(true);
-      // handleGeneratePDF(order)
-
-      const result = await response.json();
-      console.log('Order updated:', result);
-      // navigate('/dashboard')
-    } catch (error) {
-      console.error('Error updating order:', error);
-    }
-  };
-
-  
-
-  if (loading) return <div>Loading...</div>;
-  if (!order) return <div>Order not found</div>;
-
   return (
     <div className='bg-slate-100 min-h-screen'>
       <Navbar />
       <div className='w-full flex border-b border-b-slate-100 flex-col lg:px-80 md:px-20 px-4 pt-2 pb-6 bg-white shadow'>
-      <div className='pt-2 flex items-center gap-2'>
+        <div className='pt-2 flex items-center gap-2'>
           <Link to="/dashboard">Dashboard</Link>
           <MdChevronRight />
           <Link to="/dashboard/wedding">Wedding</Link>
           <MdChevronRight />
-          <span>Create New Order</span>
+          <span>Update Order Wedding</span>
         </div>
         <h1 className='font-bold mt-4 text-xl'>Create New Wedding Order</h1>
         <p>Please fill out the form below to create a new wedding order</p>
@@ -544,7 +583,7 @@ export default function UpdateOrderWedding() {
 
             <input
               type='date'
-              value={order.event.event_date}
+              value={(order.event.event_date).slice(0, 10)}
               onChange={(e) => setOrder({
                 ...order, 
                 event: {
@@ -611,6 +650,8 @@ export default function UpdateOrderWedding() {
             />
           </div> 
         </div>
+
+        <div className='border-b border-b-slate-200 mt-4' />
         
         <div className='mt-8'>
           <p>Order Data</p>
@@ -618,12 +659,9 @@ export default function UpdateOrderWedding() {
             <input
               type='number'
               value={order.invitation || ''}
-              // Fix the onChange handler for invitation input
               onChange={(e) => {
                 const newVisitor = (Number(e.target.value) || 0) * 2;
                 setOrder(prev => {
-                  if (!prev) return null; // Handle null case
-                  
                   const updated = {
                     ...prev,
                     invitation: Number(e.target.value) || 0,
@@ -706,7 +744,7 @@ export default function UpdateOrderWedding() {
             className='w-full border px-4 py-3 text-sm border-slate-300 rounded'
             placeholder='Catatan umum'
             value={order.note}
-            onChange={(e) => setOrder(order ? {...order, note: e.target.value} : null)}
+            onChange={(e) => setOrder({...order, note: e.target.value})}
           />
 
           {!validation.isValid && validation.message && (
@@ -727,29 +765,16 @@ export default function UpdateOrderWedding() {
           
           <div className='flex justify-end gap-2 mt-6'>
             <button
-              type='button'
-              onClick={() => setOpenPDF(true)}
-              className='text-xs bg-lime-500 text-white px-4 py-2 rounded hover:bg-lime-600 duration-300'
-            >
-              Generate PDF
-            </button>
-            <button
               type='submit'
               disabled={!approve || !validation.isValid}
               className='text-xs bg-primary disabled:bg-slate-400 text-white px-4 py-2 rounded hover:bg-yellow-600 duration-300'
             >
-              Update Order
+              Buat Pesanan
             </button>
           </div>
         </div>
       </form>
-      {
-        openPDF && (
-          <PDFPopUp order={order} close={() => setOpenPDF(false)} />
-        )
-      }
+      {openPDF && <PDFPopUp order={order} close={() => setOpenPDF(false)} />}
     </div>
   );
 }
-
-// FoodSection component remains exactly the same as in your original code

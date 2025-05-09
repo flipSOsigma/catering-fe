@@ -15,7 +15,7 @@ const Wedding = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch(`${routeApi}/order/Wedding`, {
+        const response = await fetch(`${routeApi}/order/category/wedding`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

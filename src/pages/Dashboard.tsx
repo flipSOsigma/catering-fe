@@ -40,7 +40,6 @@ const Dashboard = () => {
       setFilteredData(orderData)
       return
     }
-    console.log(orderData)
 
     const searchTerms = searchTerm.toLowerCase().trim().split(/\s+/)
     const filtered = orderData.filter(item => {

@@ -8,7 +8,6 @@ const OrderCard = (data: any) => {
   const [openDelete, setOpenDelete] = useState(false)
 
   const orderData = data
-  console.log(orderData)
   const invoiceItem = [
     {
       id: 1,
