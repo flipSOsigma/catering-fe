@@ -26,7 +26,7 @@ function App() {
           <Route path="/ricebox/update/:uid" element={<UpdateOrderRicebox />} />
         </Route>
       </Routes>
-    </Router>
+    </Router> 
   )
 }
 
