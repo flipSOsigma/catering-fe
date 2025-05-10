@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // server: {
-  //   allowedHosts: ['testct.microesp.my.id', '192.168.6.207'],
-  // },
+  server: {
+    allowedHosts: ['ct.microesp.my.id', '192.168.6.207'],
+  },
 })

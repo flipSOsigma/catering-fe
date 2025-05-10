@@ -17,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/hello" element={<h1>hello World</h1>} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/wedding" element={<Wedding />} />
           <Route path="/ricebox" element={<Ricebox />} />
