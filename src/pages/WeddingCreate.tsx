@@ -350,8 +350,9 @@ export default function CreateOrderWedding() {
       }))
     };
 
+    const apiRoute = import.meta.env.VITE_API_ROUTE;
     try {
-      const response = await fetch('http://localhost:3030/order', {
+      const response = await fetch(`${apiRoute}/order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
