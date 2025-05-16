@@ -1,5 +1,4 @@
 import './App.css'
-import Login from './auth/Login'
 import Ricebox from './pages/Ricebox'
 import Wedding from './pages/Wedding'
 import Dashboard from './pages/Dashboard'
@@ -9,12 +8,13 @@ import CreateOrderRicebox from './pages/RiceboxCreate'
 import UpdateOrderWedding from './pages/WeddingUpdate'
 import UpdateOrderRicebox from './pages/RiceboxUpdate'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Signin from './pages/auth/Signin'
 function App() {
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Signin />} />
         <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/hello" element={<h1>hello World</h1>} />

@@ -80,7 +80,7 @@ const Ricebox = () => {
         {isLoading ? (
           <div className="text-center py-10">Memuat data...</div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 xl:px-80 lg:px-40 md:px-20 sm:px-10 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 xl:px-80 lg:px-40 md:px-20 sm:px-10 px-4">
             {filteredData.length > 0 ? (
               filteredData.map((item: any, index: number) => (
                 <OrderCard key={`${item.id || index}`} {...item} />

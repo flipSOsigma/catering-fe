@@ -8,6 +8,7 @@ import { CiCirclePlus } from 'react-icons/ci';
 import { HiEquals } from 'react-icons/hi2';
 import { Link, useParams } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
+import Loading from '../components/Loading';
 
 type Portion = {
   id: string;
@@ -347,9 +348,11 @@ export default function CreateOrderWedding() {
   // };
 
   const [openPDF, setOpenPDF] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
     
     const validationResult = validateOrder(order);
     setValidation(validationResult);
@@ -381,12 +384,13 @@ export default function CreateOrderWedding() {
         body: JSON.stringify(payload)
       });
       // handleGeneratePDF(order)
-
+      setIsLoading(false)
       if (!response.ok) throw new Error('Failed to create order');
       setOpenPDF(true);
-      // navigate('/dashboard');
     } catch (error) {
+      setIsLoading(false)
       console.error('Error creating order:', error);
+      alert(`gagal mengupdate order | error: ${error}`);
     }
   };
 
@@ -782,6 +786,7 @@ export default function CreateOrderWedding() {
         </div>
       </form>
       {openPDF && <PDFPopUp order={order} close={() => setOpenPDF(false)} />}
+      {isLoading && <Loading />}
     </div>
   );
 }
