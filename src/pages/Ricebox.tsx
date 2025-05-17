@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import OrderCard from '../components/OrderCard'
 import { useLocation } from 'react-router-dom'
+import icon from '../assets/Logo Anisa Catering square.png'
 
 const Ricebox = () => {
   const [orderData, setOrderData] = useState<any[]>([])
@@ -10,6 +11,19 @@ const Ricebox = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const routeApi = import.meta.env.VITE_API_ROUTE
+
+  useEffect(() => {
+    document.title = 'Order Nasi Kotak | Anisa Catering'
+    const favicon = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    if (favicon) {
+      favicon.href = icon;
+    } else {
+      const newFavicon = document.createElement("link");
+      newFavicon.rel = "icon";
+      newFavicon.href = "/my-favicon.png";
+      document.head.appendChild(newFavicon);
+    }
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
