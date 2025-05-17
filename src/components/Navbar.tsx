@@ -2,14 +2,16 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import Choose from "../popup/Choose"
 import { MdOutlineMenu } from "react-icons/md"
+import icon from '../assets/Logo Anisa Catering square.png'
 
 const Navbar = () => {
-  const [ isOpen, setIsOpen ] = useState(false)
+  const [ isOpen, setIsOpen ] = useState(true)
   const [ isNavbarOpen, setIsNavbarOpen ] = useState(false)
 
   return (
     <div className="w-full py-4 flex justify-between xl:px-80 lg:px-40 md:px-20 sm:px-10 px-4 border-b border-b-neutral-200">
-      <div className="logo flex items-center">
+      <div className="logo flex items-center gap-4">
+        <img src={icon} className="object-cover w-12" alt="" />
         <div className="flex flex-col">
           <h1 className="font-bold -mb-1">Dashboard</h1>
           <p className="whitespace-nowrap">anisa catering</p>

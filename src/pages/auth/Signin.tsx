@@ -16,7 +16,6 @@ const Signin = () => {
       setErrorMsg('tolong lengkapi form')
     } 
 
-    console.log(username, password)
     const apiRoute = import.meta.env.VITE_API_ROUTE
     const res = await fetch(`${apiRoute}/auth/`, {
       method: "POST",
@@ -41,7 +40,7 @@ const Signin = () => {
     <div className="min-h-screen items-center flex justify-center px-4">
       <form onSubmit={handlerSubmit} className="flex flex-col gap-10 w-full max-w-sm p-4 rounded-md">
         <div className="w-full">
-          <h1 className="text-xl">Marketing Login</h1>
+          <h1 className="text-xl">Marketing Login.</h1>
           <p className="text-gray-300">silahkan login dengan akun anda</p>
         </div>
         {errorMsg == "" ? ( null ) : (
