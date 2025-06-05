@@ -91,6 +91,7 @@ export default function WeddingDetail() {
     const userStringed = Cookies.get('user');
     const userData = userStringed ? JSON.parse(userStringed) : null;
     setUser(userData?.username || '');
+    console.log(user)
   }, [uid]);
 
   const formatCurrency = (value: number): string => {

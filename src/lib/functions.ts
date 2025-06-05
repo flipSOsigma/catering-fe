@@ -1,4 +1,3 @@
-import { OrderData } from "./d/type";
 
 export function dateFormating(isoDate: string): string {
   const date = new Date(isoDate);

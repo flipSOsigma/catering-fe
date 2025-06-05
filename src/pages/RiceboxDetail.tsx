@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { MdChevronRight } from 'react-icons/md';
-import { CiCirclePlus, CiTrash } from 'react-icons/ci';
-import { HiEquals } from 'react-icons/hi2';
-import { Link, useParams } from 'react-router-dom';
+import { CiTrash } from 'react-icons/ci';import { Link, useParams } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 import Loading from '../components/Loading';
 import Cookies from 'js-cookie';
@@ -91,6 +89,7 @@ export default function RiceboxDetail() {
     const userStringed = Cookies.get('user');
     const userData = userStringed ? JSON.parse(userStringed) : null;
     setUser(userData?.username || '');
+    console.log(user)
   }, [uid]);
 
   const formatCurrency = (value: number): string => {
