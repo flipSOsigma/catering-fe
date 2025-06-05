@@ -9,6 +9,7 @@ import { HiEquals } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 import Loading from '../components/Loading';
+import Cookies from 'js-cookie';
 
 type Portion = {
   id: string;
@@ -31,6 +32,7 @@ type Section = {
 
 type OrderData = {
   unique_id?: string;
+  created_by: string;
   event_name: string;
   created_at?: Date;
   invitation: number;
@@ -57,10 +59,14 @@ type OrderData = {
 };
 
 export default function CreateOrderWedding() {
+  const userStringed = Cookies.get('user')
+  const user = userStringed ? JSON.parse(userStringed) : null
+  
   const [order, setOrder] = useState<OrderData>({
     event_name: '',
     invitation: 0,
     visitor: 0,
+    created_by: user ? user.username : '',
     created_at: new Date(),
     note: '',
     price: 0,
@@ -141,7 +147,6 @@ export default function CreateOrderWedding() {
     const menuPortion = menuSection?.section_portion || 0;
     const dessertPortion = dessertSection?.section_portion || 0;
 
-    // Condition 1: (buffet + menu) >= visitor * 3
     if (buffetPortion + menuPortion < order.visitor * 3) {
       return {
         isValid: false,
@@ -149,7 +154,6 @@ export default function CreateOrderWedding() {
       };
     }
 
-    // Condition 2: (buffet + dessert) >= visitor
     if (buffetPortion + dessertPortion < order.visitor) {
       return {
         isValid: false,
@@ -364,6 +368,7 @@ export default function CreateOrderWedding() {
       });
       // handleGeneratePDF(order)
       setIsLoading(false)
+
       if (!response.ok) throw new Error('Failed to create order');
       setOpenPDF(true);
     } catch (error) {

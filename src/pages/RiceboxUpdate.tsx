@@ -7,6 +7,7 @@ import { MdChevronRight } from 'react-icons/md';
 import { Link, useParams } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 import Loading from '../components/Loading';
+import Cookies from 'js-cookie';
 
 type Portion = {
   id: string;
@@ -29,6 +30,8 @@ type Section = {
 
 type OrderData = {
   unique_id?: string;
+  updated_by?: string;
+  created_by?: string;
   event_name: string;
   invitation: number;
   visitor: number;
@@ -54,10 +57,10 @@ type OrderData = {
 };
 
 export default function UpdateOrderRicebox() {
+  const [user, setUser] = useState('');
   const uid = useParams().uid
   const apiRoute = import.meta.env.VITE_API_ROUTE
   useEffect(() => {
-    console.log(uid)
     const fetchData = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_ROUTE}/order/${uid}`, {
@@ -67,6 +70,7 @@ export default function UpdateOrderRicebox() {
           }
         });
         const data = await res.json();
+        console.log(data[0])
         setOrder(data[0]);
       } catch (err) {
         console.error('Fetch error:', err);
@@ -76,9 +80,16 @@ export default function UpdateOrderRicebox() {
     if (uid) {
       fetchData();
     }
+
+    const userStringed = Cookies.get('user')
+    const userData = userStringed ? JSON.parse(userStringed) : null
+    setUser(userData.username)
+
   }, []);
+
   const [order, setOrder] = useState<OrderData>({
     event_name: '',
+    updated_by: user,
     invitation: 1,
     visitor: 1,
     note: '',
@@ -114,22 +125,48 @@ export default function UpdateOrderRicebox() {
   const [validation, setValidation] = useState({ isValid: false, message: '' });
 
   const validateOrder = (order: OrderData): { isValid: boolean; message: string } => {
-    if (
-      !order.event_name ||
-      !order.customer.customer_name ||
-      !order.customer.customer_phone ||
-      !order.event.event_location ||
-      !order.event.event_building
-    ) {
-      return { isValid: false, message: 'Please fill all required fields' };
-    }
+  // Check required fields in main order
+  if (!order.event_name) {
+    return { isValid: false, message: 'Event name is required' };
+  }
 
-    // Check if menu portions meet minimum requirement
-    // const menuSection = order.sections.find(s => s.section_name === 'Menu');
-    // const menuPortion = menuSection?.section_portion || 0;
+  // Check required customer fields
+  if (
+    !order.customer.customer_name ||
+    !order.customer.customer_phone ||
+    !order.customer.customer_email
+  ) {
+    return { isValid: false, message: 'All customer fields are required' };
+  }
 
-    return { isValid: true, message: '' };
-  };
+  // Check required event fields
+  if (
+    !order.event_name ||
+    !order.event.event_location ||
+    !order.event.event_building ||
+    !order.event.event_date ||
+    !order.event.event_time
+  ) {
+    return { isValid: false, message: 'All event fields are required' };
+  }
+
+  // Check if at least one portion has a name and count > 0
+  const hasValidPortions = order.sections.some(section => 
+    section.portions.some(portion => 
+      portion.portion_name && portion.portion_count > 0
+    )
+  );
+
+  if (!hasValidPortions) {
+    return { isValid: false, message: 'At least one menu item with portion count > 0 is required' };
+  }
+
+  return { isValid: true, message: '' };
+};
+
+  useEffect(() => {
+  setValidation(validateOrder(order));
+}, [order, order.customer, order.event, order.sections]);
 
   const createEmptyPortion = useCallback((sectionId: string, index: number): Portion => {
     return {
@@ -276,6 +313,7 @@ export default function UpdateOrderRicebox() {
 
     const payload = {
       ...order,
+      updated_by: user,
       sections: order.sections.map(s => ({
         ...s,
         portions: s.section_portion === 0 ? [] : s.portions.map(p => ({
@@ -286,7 +324,6 @@ export default function UpdateOrderRicebox() {
         }))
       }))
     };
-
     try {
       const response = await fetch(`${apiRoute}/order/${uid}`, {
         method: 'PUT',
@@ -331,6 +368,13 @@ export default function UpdateOrderRicebox() {
       <div className='bg-white p-6 rounded-md shadow border border-slate-200'>
         <h1 className='font-bold text-xl'>{title}</h1>
         <p>Silahkan perbarui menu {title.toLowerCase()}</p>
+
+        <div className='grid grid-cols-4 mt-4 items-center gap-4'>
+          <p className='text-sm'>Nama</p>
+          <p className='text-sm'>Harga</p>
+          <p className='text-sm'>Jumlah</p>
+          <p className='text-sm'>Total</p>
+        </div>
         
         {section.portions.map((portion) => (
           <div className='grid grid-cols-4 mt-4 items-center gap-4' key={portion.id}>
@@ -434,7 +478,7 @@ export default function UpdateOrderRicebox() {
         
         <div className='mt-8'>
           <p>Customer Data</p>
-          <div className='grid grid-cols-3 mt-4 items-center gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-3 mt-4 items-center gap-4'>
             <input
               type='text'
               value={order.event_name}
@@ -447,13 +491,17 @@ export default function UpdateOrderRicebox() {
             <input
               type='text'
               value={order.customer.customer_name}
-              onChange={(e) => setOrder({
+              onChange={(e) => {
+              const updated = {
                 ...order, 
                 customer: {
                   ...order.customer,
                   customer_name: e.target.value
                 }
-              })}
+              };
+              setOrder(updated);
+              setValidation(validateOrder(updated));
+            }}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
               placeholder='Nama Penerima'
               required
@@ -462,13 +510,16 @@ export default function UpdateOrderRicebox() {
             <input
               type='number'
               value={order.customer.customer_phone}
-              onChange={(e) => setOrder({
-                ...order, 
-                customer: {
-                  ...order.customer,
-                  customer_phone: e.target.value
-                }
-              })}
+              onChange={(e) => {
+                const updated = {
+                  ...order, 
+                  customer: {
+                    ...order.customer,
+                    customer_phone: e.target.value
+                  }
+                };
+                setOrder(updated);
+              }}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
               placeholder='Nomor HP'
               required
@@ -492,13 +543,13 @@ export default function UpdateOrderRicebox() {
             <input
               type='date'
               value={order.event.event_date}
-              onChange={(e) => setOrder({
-                ...order, 
+              onChange={(e) => setOrder(prev => ({
+                ...prev,
                 event: {
-                  ...order.event,
+                  ...prev.event,
                   event_date: e.target.value
                 }
-              })}
+              }))}
               className='flex-1 border px-4 py-3 text-sm border-slate-300 rounded'
               placeholder='Date'
               required
@@ -616,7 +667,7 @@ export default function UpdateOrderRicebox() {
               disabled={!approve || !validation.isValid}
               className='text-xs bg-primary disabled:bg-slate-400 text-white px-4 py-2 rounded hover:bg-yellow-600 duration-300'
             >
-              Buat Pesanan
+              Update Pesanan
             </button>
           </div>
         </div>

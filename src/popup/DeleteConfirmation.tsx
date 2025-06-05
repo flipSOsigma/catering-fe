@@ -16,7 +16,7 @@ const DeleteConfirmation = ({uid, close}: {uid: string, close:() => void}) => {
         throw new Error('Failed to delete order');
       }
       console.log('Order deleted successfully');
-      window.location.reload();
+      window.location.href = '/'
     } catch (err) {
       console.error('Fetch error:', err);
       throw err;

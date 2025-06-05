@@ -1,8 +1,10 @@
 import { FormEvent, useState } from "react"
 import { FaEye } from "react-icons/fa6"
 import Cookies from "js-cookie"
+import Loading from "../../components/Loading"
 
 const Signin = () => {
+  const [isloading, setIsLoading] = useState(false)
   const [isPasswordOpen, setIsPasswordOpen] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string>('')
 
@@ -16,6 +18,8 @@ const Signin = () => {
       setErrorMsg('tolong lengkapi form')
     } 
 
+    setIsLoading(true)
+
     const apiRoute = import.meta.env.VITE_API_ROUTE
     const res = await fetch(`${apiRoute}/auth/`, {
       method: "POST",
@@ -28,8 +32,10 @@ const Signin = () => {
     const data = await res.json()
     console.log(data)
 
+    setIsLoading(false)
     if(data.status == 200) {
-      Cookies.set('token', data.data.token)
+      Cookies.set('token', data.data.auth.token)
+      Cookies.set('user', JSON.stringify(data.data.user))
       window.location.href = '/'
     } else {
       setErrorMsg(data.msg)
@@ -63,6 +69,11 @@ const Signin = () => {
           <button className="bg-primary w-full border border-black rounded py-2">login</button>
         </div>
       </form>
+      {
+        isloading && (
+          <Loading />
+        )
+      }
     </div>
   )
 }

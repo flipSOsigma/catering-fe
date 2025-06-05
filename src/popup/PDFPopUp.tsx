@@ -1,13 +1,13 @@
 import { IoMdClose } from "react-icons/io"
 import { useNavigate } from "react-router-dom"
-import { generateCateringPDF, generateSuratJalanPDF } from "../lib/pdfGenerator"
+import { generateCateringPDF, generatePDFDapur, generateSuratJalanPDF } from "../lib/pdfGenerator"
 
 
 const PDFPopUp = ({order, close}: {order: any, close: () => void}) => {
 
   const navigate = useNavigate()
   return (
-    <div className='w-screen h-screen fixed bg-white/50 backdrop-blur-xs top-0 left-0 flex justify-center items-center'>
+    <div className='w-screen h-screen fixed bg-white/50 z-50 backdrop-blur-xs top-0 left-0 flex justify-center items-center'>
       <div className="max-w-lg w-full bg-white border rounded-md p-4 flex flex-col">
         <div className="flex justify-end w-full">
           <button onClick={() => {close; navigate('/dashboard')}}>
@@ -21,7 +21,7 @@ const PDFPopUp = ({order, close}: {order: any, close: () => void}) => {
         <div className="flex items-center w-full mt-4">
           <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary text-center flex-1 whitespace-nowrap">laporan marketing</button>
           <button onClick={() => {generateSuratJalanPDF(order); navigate('/dashboard')}} className="bg-primary flex-1">surat jalan</button>
-          <button onClick={() => {generateCateringPDF(order); navigate('/dashboard')}} className="bg-primary flex-1">pdf dapur</button>
+          <button onClick={() => {generatePDFDapur(order); navigate('/dashboard')}} className="bg-primary flex-1">pdf dapur</button>
         </div>
         <div className="flex items-center w-full mt-4">
           <button 

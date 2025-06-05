@@ -7,6 +7,8 @@ import { MdChevronRight } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 import Loading from '../components/Loading';
+import Cookies from 'js-cookie';
+import { pushWhatsapMsg } from '../lib/functions';
 
 type Portion = {
   id: string;
@@ -31,6 +33,7 @@ type OrderData = {
   unique_id?: string;
   event_name: string;
   invitation: number;
+  created_by: string;
   created_at?: Date;
   visitor: number;
   note: string;
@@ -55,10 +58,15 @@ type OrderData = {
 };
 
 export default function CreateOrderRicebox() {
+
+  const userStringed = Cookies.get('user')
+  const user = userStringed ? JSON.parse(userStringed) : null
+
   const [order, setOrder] = useState<OrderData>({
     event_name: '',
     invitation: 1,
     visitor: 1,
+    created_by: user ? user.username : 'system',
     created_at: new Date(),
     note: '',
     price: 0,
@@ -305,8 +313,10 @@ export default function CreateOrderRicebox() {
       });
 
       if (!response.ok) throw new Error('Failed to create order');
+      
       setIsLoading(false)
       setOpenPDF(true);
+      pushWhatsapMsg(payload, payload.customer.customer_phone);
     } catch (error) {
       setIsLoading(false)
       console.error('Error creating order:', error);

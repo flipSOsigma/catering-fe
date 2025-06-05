@@ -5,7 +5,7 @@ import { MdOutlineMenu } from "react-icons/md"
 import icon from '../assets/Logo Anisa Catering square.png'
 
 const Navbar = () => {
-  const [ isOpen, setIsOpen ] = useState(true)
+  const [ isOpen, setIsOpen ] = useState(false)
   const [ isNavbarOpen, setIsNavbarOpen ] = useState(false)
 
   return (

@@ -9,6 +9,8 @@ import UpdateOrderWedding from './pages/WeddingUpdate'
 import UpdateOrderRicebox from './pages/RiceboxUpdate'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Signin from './pages/auth/Signin'
+import WeddingDetail from './pages/WeddingDetail'
+import RiceboxDetail from './pages/RiceboxDetail'
 function App() {
 
   return (
@@ -23,8 +25,10 @@ function App() {
           <Route path="/ricebox" element={<Ricebox />} />
           <Route path="/wedding/create/" element={<CreateOrderWedding />} />
           <Route path="/wedding/update/:uid" element={<UpdateOrderWedding />} />
+          <Route path="/wedding/detail/:uid" element={<WeddingDetail />} />
           <Route path="/ricebox/create/" element={<CreateOrderRicebox />} />
           <Route path="/ricebox/update/:uid" element={<UpdateOrderRicebox />} />
+          <Route path="/ricebox/detail/:uid" element={<RiceboxDetail />} />
         </Route>
       </Routes>
     </Router> 

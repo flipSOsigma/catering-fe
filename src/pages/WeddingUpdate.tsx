@@ -9,6 +9,7 @@ import { HiEquals } from 'react-icons/hi2';
 import { Link, useParams } from 'react-router-dom';
 import PDFPopUp from '../popup/PDFPopUp';
 import Loading from '../components/Loading';
+import Cookies from 'js-cookie';
 
 type Portion = {
   id: string;
@@ -30,6 +31,7 @@ type Section = {
 };
 
 type OrderData = {
+  updated_by?: string;
   unique_id?: string;
   event_name: string;
   created_at?: Date;
@@ -57,9 +59,9 @@ type OrderData = {
 };
 
 export default function CreateOrderWedding() {
+  const [user, setUser] = useState('');
   const uid = useParams().uid
   useEffect(() => {
-    console.log(uid)
     const fetchData = async () => {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_ROUTE}/order/${uid}`, {
@@ -78,9 +80,15 @@ export default function CreateOrderWedding() {
     if (uid) {
       fetchData();
     }
+
+    const userStringed = Cookies.get('user')
+    const userData = userStringed ? JSON.parse(userStringed) : null
+    setUser(userData.username)
   }, []);
+
   const [order, setOrder] = useState<OrderData>({
     event_name: '',
+    updated_by: user,
     invitation: 0,
     visitor: 0,
     note: '',
@@ -363,6 +371,7 @@ export default function CreateOrderWedding() {
 
     const payload = {
       ...order,
+      updated_by: user,
       sections: order.sections.map(s => ({
         ...s,
         portions: s.section_portion === 0 ? [] : s.portions.map(p => ({
@@ -770,7 +779,7 @@ export default function CreateOrderWedding() {
           
           <div className='flex justify-end gap-2 mt-6'>
             <button
-              onClick={() => setOpenPDF(true)}
+              onClick={() => {setOpenPDF(true); setIsLoading(false);}}
               className='text-xs bg-primary disabled:bg-slate-400 text-white px-4 py-2 rounded hover:bg-yellow-600 duration-300'
             >
               Download PDF
@@ -780,13 +789,13 @@ export default function CreateOrderWedding() {
               disabled={!approve || !validation.isValid}
               className='text-xs bg-primary disabled:bg-slate-400 text-white px-4 py-2 rounded hover:bg-yellow-600 duration-300'
             >
-              Buat Pesanan
+              Update Pesanan
             </button>
           </div>
         </div>
       </form>
       {openPDF && <PDFPopUp order={order} close={() => setOpenPDF(false)} />}
-      {isLoading && <Loading />}
+      {isLoading ?  <Loading /> : null}
     </div>
   );
 }
