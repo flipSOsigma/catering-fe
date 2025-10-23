@@ -11,6 +11,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Signin from './pages/auth/Signin'
 import WeddingDetail from './pages/WeddingDetail'
 import RiceboxDetail from './pages/RiceboxDetail'
+import TestingPage from './pages/TestingPage'
 function App() {
 
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/ricebox/update/:uid" element={<UpdateOrderRicebox />} />
           <Route path="/ricebox/detail/:uid" element={<RiceboxDetail />} />
         </Route>
+          <Route path="/testing/page" element={<TestingPage />} />
       </Routes>
     </Router> 
   )
